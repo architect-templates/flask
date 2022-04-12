@@ -1,0 +1,29 @@
+name: flask
+description: A starter component that uses Flask framework and SQLite database.
+
+keywords:
+  - Flask
+  - SQLite
+  - Python
+  - HTML
+
+parameters:
+  flask_port:
+    description: Port that Flask is served
+    default: 5000
+
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    interfaces:
+      main: ${{ parameters.flask_port }}
+    ${{ if architect.environment == 'local' }}:
+      command: python3 app.py
+
+interfaces:
+  app:
+    url: ${{ services.app.interfaces.main.url }}
+    ingress:
+      subdomain: app

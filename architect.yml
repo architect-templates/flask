@@ -9,12 +9,6 @@ keywords:
   - Gunicorn
 
 parameters:
-  flask_port:
-    description: Port that Flask is served
-    default: 5000
-  flask_app:
-    description: Specify how to load Flask application
-    default: flaskr
   flask_env:
     description: Environment in which Flask application runs
     default: production
@@ -27,11 +21,10 @@ services:
     build:
       context: ./
     interfaces:
-      main: ${{ parameters.flask_port }}
+      main: &app-port 5000
     environment:
-      FLASK_APP: ${{ parameters.flask_app }}
       FLASK_ENV: ${{ parameters.flask_env }}
-      FLASK_PORT: ${{ parameters.flask_port }}
+      FLASK_PORT: *app-port
     command:
       - sh
       - -c

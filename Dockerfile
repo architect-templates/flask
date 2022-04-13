@@ -10,11 +10,5 @@ RUN pip install -r /requirements.txt
 # Copy project
 COPY . /app
 
-# Set environment variables
-ENV FLASK_APP=flaskr
-ENV FLASK_ENV=development
-ENV FLASK_HOST=0.0.0.0
-ENV FLASK_PORT=5000
-
 # Instantiate database
 RUN flask init-db

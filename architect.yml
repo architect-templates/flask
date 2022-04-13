@@ -6,19 +6,37 @@ keywords:
   - SQLite
   - Python
   - HTML
+  - Gunicorn
 
 parameters:
   flask_port:
     description: Port that Flask is served
     default: 5000
+  flask_app:
+    description: Specify how to load Flask application
+    default: flaskr
+  flask_env:
+    description: Environment in which Flask application runs
+    default: production
+  gunicorn_workers:
+    description: Number of Gunicorn worker processes
+    default: 4
 
 services:
   app:
     build:
       context: ./
-      dockerfile: Dockerfile
     interfaces:
       main: ${{ parameters.flask_port }}
+    environment:
+      FLASK_APP: ${{ parameters.flask_app }}
+      FLASK_ENV: ${{ parameters.flask_env }}
+      FLASK_PORT: ${{ parameters.flask_port }}
+    command:
+      - sh
+      - -c
+      - |
+        gunicorn -w ${{ parameters.gunicorn_workers }} -b 0.0.0.0:${{ parameters.flask_port }} "flaskr:create_app()"
     ${{ if architect.environment == 'local' }}:
       command: python3 app.py
 

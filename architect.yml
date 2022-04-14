@@ -29,7 +29,7 @@ services:
       - sh
       - -c
       - |
-        gunicorn -w ${{ parameters.gunicorn_workers }} -b 0.0.0.0:5000 "flaskr:create_app()"
+        gunicorn -w ${{ parameters.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
     ${{ if architect.environment == 'local' }}:
       command: python3 app.py
 

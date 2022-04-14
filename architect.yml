@@ -1,0 +1,40 @@
+name: flask
+description: A starter component that uses Flask framework and SQLite database.
+
+keywords:
+  - Flask
+  - SQLite
+  - Python
+  - HTML
+  - Gunicorn
+
+parameters:
+  flask_env:
+    description: Environment in which Flask application runs
+    default: production
+  gunicorn_workers:
+    description: Number of Gunicorn worker processes
+    default: 4
+
+services:
+  app:
+    build:
+      context: ./
+    interfaces:
+      main: &app-port 5000
+    environment:
+      FLASK_ENV: ${{ parameters.flask_env }}
+      FLASK_PORT: *app-port
+    command:
+      - sh
+      - -c
+      - |
+        gunicorn -w ${{ parameters.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
+    ${{ if architect.environment == 'local' }}:
+      command: python3 app.py
+
+interfaces:
+  app:
+    url: ${{ services.app.interfaces.main.url }}
+    ingress:
+      subdomain: app

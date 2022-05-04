@@ -8,7 +8,7 @@ keywords:
   - HTML
   - Gunicorn
 
-parameters:
+secrets:
   flask_env:
     description: Environment in which Flask application runs
     default: production
@@ -23,13 +23,13 @@ services:
     interfaces:
       main: &app-port 5000
     environment:
-      FLASK_ENV: ${{ parameters.flask_env }}
+      FLASK_ENV: ${{ secrets.flask_env }}
       FLASK_PORT: *app-port
     command:
       - sh
       - -c
       - |
-        gunicorn -w ${{ parameters.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
+        gunicorn -w ${{ secrets.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
     ${{ if architect.environment == 'local' }}:
       command: python3 app.py
 

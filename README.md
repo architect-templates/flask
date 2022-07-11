@@ -12,7 +12,7 @@
 
 This example will show you the use-case for using Python on Architect leveraging the Flask tutorial application – [Flaskr](https://flask.palletsprojects.com/en/2.1.x/tutorial/). In this example, we've written a component spec (the `architect.yml` file) that defines a component to run a Flask based web application.
 
-[Learn more about the architect.yml file](//docs.architect.io/configuration)
+[Learn more about the architect.yml file](//docs.architect.io/components/architect-yml/)
 
 ## Running locally
 

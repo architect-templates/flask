@@ -26,7 +26,7 @@ services:
       FLASK_ENV: ${{ secrets.flask_env }}
       FLASK_PORT: *app-port
     liveness_probe:
-      command: sh -c "curl --fail 0.0.0.0:5000 || exit 1"
+      command: curl --fail 0.0.0.0:5000
       interval: 30s
       failure_threshold: 3
     command:
@@ -36,8 +36,6 @@ services:
         gunicorn -w ${{ secrets.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
     ${{ if architect.environment == 'local' }}:
       command: python3 app.py
-      liveness_probe:
-        command: curl --fail 0.0.0.0:5000 || exit 1
 
 interfaces:
   app:

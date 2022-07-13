@@ -30,7 +30,7 @@ services:
       - -c
       - |
         gunicorn -w ${{ secrets.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
-    ${{ if architect.environment == 'local' }}:
+    debug:
       command: python3 app.py
 
 interfaces:

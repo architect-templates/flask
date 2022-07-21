@@ -25,6 +25,7 @@ services:
     environment:
       FLASK_ENV: ${{ secrets.flask_env }}
       FLASK_PORT: *app-port
+      FLASK_APP: ./app.py
     # liveness_probe:
     #   command: curl --fail 0.0.0.0:5000
     #   interval: 30s
@@ -37,7 +38,8 @@ services:
     debug:
       environment:
         FLASK_ENV: development
-      command: python3 app.py
+        FLASK_DEBUG: 1
+      command: flask run --host=0.0.0.0
       volumes:
         src:
           host_path: ./flaskr/

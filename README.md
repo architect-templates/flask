@@ -28,11 +28,3 @@ $ architect dev architect.yml
 ```
 
 Once the deploy has completed, you can reach your new service by going to http://web.arc.localhost/.
-
-Default values of `flask_port` has been set. Modify this parameter on the top of the `architect.yml` file.
-
-```yaml
-parameters:
-  flask_port:
-    default: 5000
-```

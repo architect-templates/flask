@@ -9,9 +9,6 @@ keywords:
   - Gunicorn
 
 secrets:
-  flask_env:
-    description: Environment in which Flask application runs
-    default: production
   gunicorn_workers:
     description: Number of Gunicorn worker processes
     default: 4
@@ -23,11 +20,11 @@ services:
     interfaces:
       main: &app-port 5000
     environment:
-      FLASK_ENV: ${{ secrets.flask_env }}
+      FLASK_ENV: production
       FLASK_PORT: *app-port
     liveness_probe:
       command: curl --fail 0.0.0.0:5000
-      interval: 30s
+      interval: 10s
       failure_threshold: 3
     command:
       - sh
@@ -35,7 +32,13 @@ services:
       - |
         gunicorn -w ${{ secrets.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
     debug:
-      command: python3 app.py
+      environment:
+        FLASK_ENV: development
+      command: flask run --host=0.0.0.0
+      volumes:
+        src:
+          host_path: ./flaskr
+          mount_path: /app/flaskr
 
 interfaces:
   app:

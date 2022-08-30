@@ -31,4 +31,4 @@ $ cd flask
 $ architect dev architect.yml
 ```
 
-Once the deploy has completed, you can reach your new service by going to http://web.arc.localhost/.
+Once the deploy has completed, you can reach your new service by going to https://web.localhost.architect.sh/.

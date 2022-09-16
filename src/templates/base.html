@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+    <title>Favorite Movies</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <div class="container">
+        {% block header %}{% endblock %}
+        <h1 className="header" align="center">
+            Favorite Movies
+        </h1>  
+        {% block nextsteps %}{% endblock %}
+        {% block user_input %}{% endblock %}
+        {% block user_table %}{% endblock %}
+    </div>
+</html>

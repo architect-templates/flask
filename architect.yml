@@ -12,36 +12,64 @@ secrets:
   gunicorn_workers:
     description: Number of Gunicorn worker processes
     default: 4
+  db_user:
+    description: Root user to assign to the component's DB
+    default: architect
+  db_pass:
+    description: Root password to assign to the component's DB
+    default: secret
+  db_name:
+    description: Name of the DB the component will store content in
+    default: api-db
+  db_port:
+    description: Port for the db
+    default: 5432
+  api_port:
+    description: Port for api
+    default: 5000
 
 services:
-  app:
+  api-db:
+      image: postgres:12
+      interfaces:
+        database:
+          port: ${{ secrets.db_port }}
+          protocol: postgresql
+      environment:
+        POSTGRES_USER: ${{ secrets.db_user }}
+        POSTGRES_PASSWORD: ${{ secrets.db_pass }}
+        POSTGRES_DB: ${{ secrets.db_name }}
+  api:
     build:
       context: ./
     interfaces:
-      main: &app-port 5000
+      main: ${{ secrets.api_port }}
     environment:
       FLASK_ENV: production
-      FLASK_PORT: *app-port
+      FLASK_PORT: ${{ secrets.api_port }}
+      DB_ADDR: ${{ services.api-db.interfaces.database.url }}/${{ secrets.db_name }}
+      DB_USER: ${{ secrets.db_user }}
+      DB_PASS: ${{ secrets.db_pass }}
     liveness_probe:
-      command: curl --fail 0.0.0.0:5000
+      command: curl --fail 0.0.0.0:${{ secrets.api_port }}
       interval: 10s
       failure_threshold: 3
     command:
       - sh
       - -c
       - |
-        gunicorn -w ${{ secrets.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "flaskr:create_app()"
+        gunicorn -w ${{ secrets.gunicorn_workers }} -b 0.0.0.0:${{ services.api.interfaces.main.port }} "src:create_app()"
     debug:
       environment:
         FLASK_ENV: development
       command: flask run --host=0.0.0.0
       volumes:
         src:
-          host_path: ./flaskr
-          mount_path: /app/flaskr
+          host_path: ./src
+          mount_path: /api/src
 
 interfaces:
-  app:
-    url: ${{ services.app.interfaces.main.url }}
+  api:
+    url: ${{ services.api.interfaces.main.url }}
     ingress:
-      subdomain: app
+      subdomain: api

@@ -13,6 +13,3 @@ RUN pip install -r /requirements.txt
 
 # Copy project
 COPY . /api
-
-# Instantiate database
-# RUN flask init-db

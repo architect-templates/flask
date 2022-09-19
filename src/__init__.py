@@ -1,4 +1,3 @@
-from re import A
 from flask import Flask
 from flask import render_template
 from flask import redirect
@@ -6,13 +5,10 @@ from flask import flash
 from flask import url_for
 from flask import request
 import os
-import requests as r
 from time import sleep
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.exc import OperationalError
 
 """Wait until database is initialized to start app""" 
 # Build connection string

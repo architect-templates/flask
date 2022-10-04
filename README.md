@@ -55,7 +55,6 @@ $ cd ./node-rest-api
 $ architect dev architect.yml
 ```
 
-
 ## Deploying to the Cloud
 
 Want to try deploying this to a cloud environment? Architect's got you covered there, too! It only takes a minute to

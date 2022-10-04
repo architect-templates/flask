@@ -11,3 +11,4 @@ requests==2.28.1
 PyMySQL==1.0.2
 psycopg2==2.9.3
 flask-sqlalchemy==2.5.1
+flask-cors==3.0.10

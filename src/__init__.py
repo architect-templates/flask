@@ -5,6 +5,7 @@ from time import sleep
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
+from flask_cors import CORS
 
 from flask import jsonify
 
@@ -28,6 +29,7 @@ while database_is_down:
 
 """Start app build"""
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_connection_string
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
@@ -52,8 +54,8 @@ def index():
     """Create new movie entry"""
     if request.method == "POST":
         data = request.get_json()
-        name = data['name']
-        rating = data['rating']
+        name = str(data['name'])
+        rating = int(data['rating'])
         error = None
 
         if not name:

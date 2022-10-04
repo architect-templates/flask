@@ -1,8 +1,6 @@
 FROM python:3.9.12
 
 ENV FLASK_APP src
-ENV FLASK_ENV development
-ENV FLASK_DEBUG 1
 
 WORKDIR /api
 

@@ -18,7 +18,10 @@ services:
     build:
       context: ./
     interfaces:
-      main: &app-port 5000
+      main:
+        port: &app-port 5000
+        ingress:
+          subdomain: app
     environment:
       FLASK_ENV: production
       FLASK_PORT: *app-port
@@ -39,9 +42,3 @@ services:
         src:
           host_path: ./flaskr
           mount_path: /app/flaskr
-
-interfaces:
-  app:
-    url: ${{ services.app.interfaces.main.url }}
-    ingress:
-      subdomain: app

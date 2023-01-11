@@ -43,7 +43,10 @@ services:
     build:
       context: ./
     interfaces:
-      main: ${{ secrets.api_port }}
+      main:
+        port: 5000
+        ingress:
+          subdomain: app
     environment:
       FLASK_ENV: production
       FLASK_PORT: ${{ secrets.api_port }}
@@ -66,11 +69,5 @@ services:
       command: flask run --host=0.0.0.0
       volumes:
         src:
-          host_path: ./src
-          mount_path: /api/src
-
-interfaces:
-  api:
-    url: ${{ services.api.interfaces.main.url }}
-    ingress:
-      subdomain: api
+          host_path: ./flaskr
+          mount_path: /app/flaskr

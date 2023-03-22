@@ -69,7 +69,6 @@ services:
           subdomain: app
     # Set environment variables for your application here
     environment:
-      FLASK_ENV: production
       POSTGRES_URL: postgresql://${{ secrets.db_user }}:${{ secrets.db_pass }}@${{ services.database.interfaces.main.host}}:${{ services.database.interfaces.main.port}}/${{ secrets.db_name }}
     # The liveness_probe makes sure the application is healthy - if not, it will re-start the application
     liveness_probe:
@@ -86,7 +85,7 @@ services:
     #   https://docs.architect.io/components/local-configuration/#hot-reloading
     debug:
       environment:
-        FLASK_ENV: development
+        FLASK_DEBUG: 1
       command: flask --app app run --host=0.0.0.0
       volumes:
         src:

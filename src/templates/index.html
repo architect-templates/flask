@@ -45,8 +45,7 @@
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.send(JSON.stringify(params));
 
-      document.getElementById("formName").value = "";
-      document.getElementById("formRating").value = "";
+      location.reload();
       showItems();
     }
 

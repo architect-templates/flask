@@ -8,6 +8,8 @@ keywords:
   - HTML
   - Gunicorn
 
+# Add secrets to be used by different services. For more information:
+# https://docs.architect.io/deployments/secrets/
 secrets:
   gunicorn_workers:
     description: Number of Gunicorn worker processes
@@ -28,7 +30,10 @@ secrets:
     description: Port the app accepts connections on
     default: 5000
 
+# Below are the configured services for the Flask component.
+# For more info - https://docs.architect.io/components/services/
 services:
+  # Database service
   database:
     image: postgres:12
     interfaces:
@@ -44,19 +49,29 @@ services:
       interval: 10s
       failure_threshold: 3
 
+  ### This service is the actual Flask component ###
   app:
+    # Build context is the location of your application relative to the architect.yml file
     build:
       context: .
     depends_on:
+      # We want our app to start up after the database is running so that we can connect to it on startup!
+      # This block contains a list of services we need to start before 'app' starts.
       - database
+    # Main interface port used to help define the url in the `interfaces` block
     interfaces:
       main:
         port: ${{ secrets.app_port }}
+        #   Ingresses are used to expose the application to the API gateway, allowing
+        #   other services and dependencies to connect to it.
+        #   For more info - https://docs.architect.io/components/ingress-rules/
         ingress:
           subdomain: app
+    # Set environment variables for your application here
     environment:
       FLASK_ENV: production
       POSTGRES_URL: postgresql://${{ secrets.db_user }}:${{ secrets.db_pass }}@${{ services.database.interfaces.main.host}}:${{ services.database.interfaces.main.port}}/${{ secrets.db_name }}
+    # The liveness_probe makes sure the application is healthy - if not, it will re-start the application
     liveness_probe:
       command: curl --fail localhost:5000
       interval: 10s
@@ -66,11 +81,16 @@ services:
       - -c
       - |
         gunicorn -w ${{ secrets.gunicorn_workers }} -b 0.0.0.0:${{ services.app.interfaces.main.port }} "app:app"
+    # Debug block is used to enable hot-reloading to make real-time changes to an
+    #   application while running `architect dev`. For more info, see -
+    #   https://docs.architect.io/components/local-configuration/#hot-reloading
     debug:
       environment:
         FLASK_ENV: development
       command: flask --app app run --host=0.0.0.0
       volumes:
         src:
+          # Path to source code relative to the architect.yml file (/src)
           host_path: ./src
+          # The `WORKDIR` defined in the Dockerfile (/app)
           mount_path: /app

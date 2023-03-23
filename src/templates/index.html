@@ -1,87 +1,95 @@
 <!DOCTYPE html>
 <html lang='en'>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./static/style.css">
+    <link rel="icon" href="./favicon.ico" />
+    <title>Flask App</title>
+  </head>
 
-<head>
-  <link rel="stylesheet" type="text/css" href="./static/style.css">
-  <link rel="icon" href="./favicon.ico" />
-  <title>Flask App</title>
-</head>
-
-<body>
-  <div class="container">
-    <p align="center">
-      <a href="//architect.io" target="blank">
-        <img src="https://cdn.architect.io/logo/horizontal.png" width="320" alt="Architect Logo" />
-      </a>
-    </p>
-    <div style="margin: 40px">
-      <div id="container">
-        <form action="javascript:createItem(formName.value, formRating.value)">
-          <h1>Favorite Movie</h1>
-          <div class="user_inputs">
-            <input placeholder="Name*" type="text" id="formName" name="name" class="form-control" value="" minlength="1"
-              maxlength="80" required>
-            <input placeholder="Rating 1-5*" type="number" id="formRating" name="rating" class="form-control" value=""
-              min="1" max="5" required>
-          </div>
-          <div class="d-grid gap-2">
-            <button type="submit">
-              Submit
-            </button>
-          </div>
-        </form>
+  <body>
+    <div class="container">
+      <p align="center">
+        <a href="//architect.io" target="blank">
+          <img src="https://cdn.architect.io/logo/horizontal.png" width="320" alt="Architect Logo" />
+        </a>
+      </p>
+      <div style="margin: 40px">
+        <div id="container">
+          <form action="javascript:createItem(formName.value, formRating.value)">
+            <h1>Favorite Movie</h1>
+            <div class="user_inputs">
+              <input placeholder="Name*" type="text" id="formName" name="name" class="form-control" value="" minlength="1"
+                maxlength="80" required>
+              <input placeholder="Rating 1-5*" type="number" id="formRating" name="rating" class="form-control" value=""
+                min="1" max="5" required>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit">
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+        <div style="margin-bottom: 10px" id="itemList"></div>
       </div>
-      <div style="margin-bottom: 10px" id="itemList"></div>
     </div>
-  </div>
-  <script>
-    function createItem(name, rating) {
-      const xhr = new XMLHttpRequest();
-      const params = {
-        name,
-        rating
-      };
-      xhr.open("POST", "/api/item");
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.send(JSON.stringify(params));
+    <script>
+      function createItem(name, rating) {
+        const xhr = new XMLHttpRequest();
+        const params = {
+          name,
+          rating
+        };
+        xhr.open("POST", "/api/item");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(params));
 
-      document.getElementById("formName").value = "";
-      document.getElementById("formRating").value = "";
-      showItems();
-    }
-
-    function createItemElement(name, rating) {
-      return `<tr><td>${name}</td><td>${rating}</td></tr>`;
-    }
-
-    function buildItemList(data) {
-      if (data.length > 0) {
-        let itemElements = data.reduce((output, ele) => output += createItemElement(ele.name, ele.rating), '');
-        return `<table><tr><th>Name</th><th>Rating</th></tr>${itemElements}</table>`;
-      } else {
-        return '<p>No entries found</p>';
-      }
-    }
-
-    function showItems() {
-      const xhr = new XMLHttpRequest()
-      xhr.onload = () => {
-        if (xhr.status == 200) {
-          let data = JSON.parse(xhr.response);
-          let itemList = buildItemList(data);
+        if (!document.getElementById('itemTable')) {
+          const itemList = buildItemList([{ name, rating }]);
           document.getElementById("itemList").innerHTML = itemList;
         } else {
-          console.error('Error retrieving items!')
+          const newRow = document.getElementById("itemTable").insertRow();
+          const titleCell = newRow.insertCell(0);
+          const ratingCell = newRow.insertCell(1);
+          titleCell.appendChild(document.createTextNode(name));
+          ratingCell.appendChild(document.createTextNode(rating));
+        }
+
+        document.getElementById("formName").value = "";
+        document.getElementById("formRating").value = "";
+      }
+
+      function createItemElement(name, rating) {
+        return `<tr><td>${name}</td><td>${rating}</td></tr>`;
+      }
+
+      function buildItemList(data) {
+        if (data.length > 0) {
+          const itemElements = data.reduce((output, element) => output += createItemElement(element.name, element.rating), '');
+          return `<table id="itemTable"><tr><th>Name</th><th>Rating</th></tr><tbody>${itemElements}</tbody></table>`;
+        } else {
+          return '<p>No entries found</p>';
         }
       }
-      xhr.open("GET", "/api/items")
-      xhr.send()
-    }
 
-    window.addEventListener('load', function () {
-      showItems();
-    });
-  </script>
-</body>
+      function showItems() {
+        const xhr = new XMLHttpRequest()
+        xhr.onload = () => {
+          if (xhr.status == 200) {
+            const data = JSON.parse(xhr.response);
+            const itemList = buildItemList(data);
+            document.getElementById("itemList").innerHTML = itemList;
+          } else {
+            console.error('Error retrieving items!')
+          }
+        }
+        xhr.open("GET", "/api/items")
+        xhr.send()
+      }
 
+      window.addEventListener('load', function () {
+        showItems();
+      });
+    </script>
+  </body>
 </html>
